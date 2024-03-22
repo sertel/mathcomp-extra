@@ -15,7 +15,7 @@
           mathcomp = coqPackages.mathcomp;
           d = coqPackages.mkCoqDerivation {
             pname = "mathcomp-extra";
-            owner = "sertel"; # FIXME owner = "thery";
+            owner = "thery";
 
             # Indeed how much sense does this still make?!
             # When I'm loading this library flake-style then it is already there!

@@ -16,6 +16,7 @@
           d = coqPackages.mkCoqDerivation {
             pname = "mathcomp-extra";
             owner = "thery";
+            version = "0.0.1";
 
             # Indeed how much sense does this still make?!
             # When I'm loading this library flake-style then it is already there!

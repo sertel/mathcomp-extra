@@ -6,38 +6,14 @@
 
   outputs = { self, nixpkgs, flake-utils }:
     let
-      mkDrv = {
-       # lib,
-        coqPackages, coq
-      #  , version
-      } :
+      pkgs = nixpkgs.legacyPackages.${system};
+      mkDrv = { coqPackages, coq } :
         let
           mathcomp = coqPackages.mathcomp;
           d = coqPackages.mkCoqDerivation {
             pname = "mathcomp-extra";
             owner = "thery";
             version = "0.0.1";
-
-            # Indeed how much sense does this still make?!
-            # When I'm loading this library flake-style then it is already there!
-            # The only thing that would make sense, would be to derive
-            # the according coq and coqPackages versions!
-
-#            inherit version;
-#
-#            defaultVersion = with lib.versions; lib.switch [coq.coq-version mathcomp.version] [
-#              { cases = [(isGe "8.19") (isGe "2.2.0")  ]; out = "0.2.0"; }
-#              { cases = [(range "8.17" "8.18") (isGe "2.1.0") ]; out = "0.1.0"; }
-#            ] null;
-#
-#            release."0.2.0" = {
-#              rev = "715b62ab9974542771ddbfecb2ea93fbcb914e6b";
-#              sha256 = "";
-#            };
-#            release."0.1.0" = {
-#              rev = "969b32d07e9bae4e0d932b968efdc03d4a637e91";
-#              sha256 = "";
-#            };
 
             propagatedBuildInputs =
               [ coq ]
@@ -60,7 +36,40 @@
           d.overrideAttrs (oldAttrs: {
             src = ./.;
           });
-    in { inherit mkDrv; } //
+
+      mkDrv' = {
+        # lib,
+        mce_revision
+      } :
+        let
+          release."0.2.0" = {
+            rev = "715b62ab9974542771ddbfecb2ea93fbcb914e6b";
+            deps = {
+              coq = pkgs.coq_8_19;
+              coqPackages = pkgs.coqPackages_8_19.overrideScope
+                (self: super: {
+                  mathcomp = super.mathcomp.override { version = "2.2.0" };
+                });
+            };
+          };
+          release."0.1.0" = {
+            rev = "969b32d07e9bae4e0d932b968efdc03d4a637e91";
+            deps = {
+              coq = pkgs.coq_8_18;
+              coqPackages = pkgs.coqPackages_8_18.overrideScope
+                (self: super: {
+                  mathcomp = super.mathcomp.override { version = "2.2.0" };
+                });
+            };
+          };
+          deps = with pkgs.coqPackages.lib; switch mce_revision [
+            { case = isEq release."0.2.0".rev; out = release."0.2.0".deps; }
+            { case = isEq release."0.1.0".rev; out = release."0.1.0".deps; }
+          ] null;
+        in
+          mkDrv (with deps; { inherit coq coqPackages; } );
+
+    in { inherit mkDrv; mkDrv' } //
        flake-utils.lib.eachDefaultSystem (system:
          let
            pkgs = nixpkgs.legacyPackages.${system};

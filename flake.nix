@@ -65,7 +65,7 @@
             deps = with pkgs.coqPackages.lib; switch mce_revision [
               { case = release."0.2.0".rev; out = release."0.2.0".deps; }
               { case = release."0.1.0".rev; out = release."0.1.0".deps; }
-            ] null;
+            ] (throw "no such version: ${mce_revision}");
           in
             mkDrv (with deps; { inherit coq coqPackages version; } );
 

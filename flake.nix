@@ -63,8 +63,8 @@
               };
             };
             deps = with pkgs.coqPackages.lib; switch mce_revision [
-              { case = {r}: release."0.2.0".rev == r; out = release."0.2.0".deps; }
-              { case = {r}: release."0.1.0".rev == r; out = release."0.1.0".deps; }
+              { case = release."0.2.0".rev; out = release."0.2.0".deps; }
+              { case = release."0.1.0".rev; out = release."0.1.0".deps; }
             ] null;
           in
             mkDrv (with deps; { inherit coq coqPackages version; } );

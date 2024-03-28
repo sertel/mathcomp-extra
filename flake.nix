@@ -69,7 +69,7 @@
           in
             mkDrv (with deps; { inherit coq coqPackages version; } );
 
-      in { inherit mkDrv; } // # mkDrv'; } //
+      in { inherit mkDrv mkDrv'; } //
          rec {
            devShell =
              let

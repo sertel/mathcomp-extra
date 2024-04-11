@@ -38,6 +38,15 @@
               src = ./.;
             });
 
+        # Indeed all this release stuff does not make sense anymore.
+        # Releases are delt with via the flake.lock.
+        # That is, one revision direclty maps to one configuration!
+        # Once the library is updated then also the flake is updated.
+        # The old configuration is still available via the old revision.
+        # The question is then:
+        # Where would a list of versions be located for a specific library?
+        # Versions can be listed at the website and the flake lock support
+        # version tags instead of commit hashes as well.
         mkDrv' = { mce_revision } :
           let
             release."0.2.0" = {
